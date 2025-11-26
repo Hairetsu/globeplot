@@ -1,6 +1,7 @@
 "use client";
 
 import GlobalVisualWidget from "@/components/global-breakdown";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 
 const locationsData = [
@@ -73,6 +74,9 @@ export default function Home() {
 
   return (
     <div className="w-full h-screen flex items-center justify-center relative">
+      <div className="absolute top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
       <GlobalVisualWidget locationsData={locationsData} />
     </div>
   );
