@@ -14,7 +14,7 @@ An interactive 3D globe component for React/Next.js that lets you visualize geog
 - 🔍 **Dynamic Filtering** - Filter locations by country, state, and city with cascading controls
 - 📱 **Fully Responsive** - Optimized for desktop, tablet, and mobile devices
 - 🎨 **Customizable** - Easy to style and extend with your own data
-- ⚡ **Performance Optimized** - Efficient rendering with canvas-based 3D projection
+- ⚡ **Performance Optimized** - GPU-accelerated CSS transforms for smooth interactions
 - 🎪 **Fishbowl Effect** - Spherical lens distortion for realistic globe appearance
 
 ## Quick Start
@@ -157,7 +157,7 @@ This copies the globe components and assets to your project. See the [CLI README
 - **TypeScript** - Type-safe development
 - **Tailwind CSS 4** - Utility-first styling
 - **Lucide React** - Beautiful icons
-- **Canvas API** - High-performance 3D rendering
+- **CSS 3D Transforms** - Hardware-accelerated 3D rotation and perspective
 
 ## Features in Detail
 
