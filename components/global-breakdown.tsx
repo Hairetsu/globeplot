@@ -15,15 +15,16 @@ export default function GlobalVisualWidget({
   const [filterCountry, setFilterCountry] = useState<string>("");
   const [filterState, setFilterState] = useState<string>("");
   const [filterCity, setFilterCity] = useState<string>("");
-  const [mapStyle, setMapStyle] = useState<string>("/earth-map.webp");
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+  const [mapStyle, setMapStyle] = useState<string>(`${basePath}/earth-map.webp`);
 
   const mapStyles = [
-    { name: "Default", url: "/earth-map.webp" },
-    { name: "Blue Hologram", url: "/earth-blue-hologram.webp" },
-    { name: "Dark Gold", url: "/earth-dark-gold.webp" },
-    { name: "Minimal Light", url: "/earth-minimal-light.webp" },
-    { name: "Night", url: "/earth-night.webp" },
-    { name: "Vintage", url: "/earth-vintage.webp" },
+    { name: "Default", url: `${basePath}/earth-map.webp` },
+    { name: "Blue Hologram", url: `${basePath}/earth-blue-hologram.webp` },
+    { name: "Dark Gold", url: `${basePath}/earth-dark-gold.webp` },
+    { name: "Minimal Light", url: `${basePath}/earth-minimal-light.webp` },
+    { name: "Night", url: `${basePath}/earth-night.webp` },
+    { name: "Vintage", url: `${basePath}/earth-vintage.webp` },
   ];
 
   // Extract unique values for filters
@@ -95,8 +96,8 @@ export default function GlobalVisualWidget({
       {/* Controls Container */}
       <div
         className={`absolute top-4 left-4 z-10 flex flex-col gap-3 max-w-xs transition-opacity duration-300 ${showFilters
-            ? "opacity-100"
-            : "opacity-0 md:opacity-100 pointer-events-none md:pointer-events-auto"
+          ? "opacity-100"
+          : "opacity-0 md:opacity-100 pointer-events-none md:pointer-events-auto"
           } ${showFilters ? "mt-12 md:mt-0" : ""}`}
       >
         {/* Aggregation Mode Selector */}
@@ -108,8 +109,8 @@ export default function GlobalVisualWidget({
             <button
               onClick={() => setAggregationMode("country")}
               className={`px-2 py-1 text-xs rounded transition-colors ${aggregationMode === "country"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
             >
               Country
@@ -117,8 +118,8 @@ export default function GlobalVisualWidget({
             <button
               onClick={() => setAggregationMode("state")}
               className={`px-2 py-1 text-xs rounded transition-colors ${aggregationMode === "state"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
             >
               State
@@ -126,8 +127,8 @@ export default function GlobalVisualWidget({
             <button
               onClick={() => setAggregationMode("city")}
               className={`px-2 py-1 text-xs rounded transition-colors ${aggregationMode === "city"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
             >
               City
