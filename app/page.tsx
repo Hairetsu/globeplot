@@ -74,10 +74,10 @@ export default function Home() {
 
   return (
     <div className="w-full h-screen flex items-center justify-center relative">
-      <div className="absolute top-4 right-4 z-50">
+      <GlobalVisualWidget locationsData={locationsData} />
+      <div className="absolute top-4 right-4">
         <ThemeToggle />
       </div>
-      <GlobalVisualWidget locationsData={locationsData} />
     </div>
   );
 }
