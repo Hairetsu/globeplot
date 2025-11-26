@@ -31,7 +31,7 @@ The CLI will:
 1. Create a `components` directory if it doesn't exist
 2. Copy `globe.tsx` component to `components/globe.tsx`
 3. Copy `global-breakdown.tsx` component to `components/global-breakdown.tsx`
-4. Copy the earth map image to `public/earth-map.jpg`
+4. Copy the earth map image to `public/earth-map.webp`
 
 ## Components
 
@@ -86,7 +86,7 @@ export default function Dashboard() {
 - `filterState?: string` - Filter locations by state
 - `filterCity?: string` - Filter locations by city
 - `aggregationMode?: 'country' | 'state' | 'city'` - How to aggregate/cluster locations
-- `mapImage?: string` - Path to custom map image (defaults to '/earth-map.jpg')
+- `mapImage?: string` - Path to custom map image (defaults to '/earth-map.webp')
 
 ## Publishing to npm
 

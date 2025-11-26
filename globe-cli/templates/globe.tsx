@@ -37,7 +37,7 @@ export default function Globe({
   filterState,
   filterCity,
   aggregationMode = 'city',
-  mapImage = '/earth-map.jpg'
+  mapImage = '/earth-map.webp'
 }: GlobeProps) {
   const globeRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<Map<string, HTMLDivElement>>(new Map());

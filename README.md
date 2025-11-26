@@ -2,7 +2,7 @@
 
 An interactive 3D globe component for React/Next.js that lets you visualize geographic data with beautiful animations and filtering capabilities.
 
-![GlobePlot Demo](public/earth-map.jpg)
+![GlobePlot Demo](public/earth-map.webp)
 
 ## Features
 
@@ -98,14 +98,14 @@ export default function Dashboard() {
 
 ### Globe Props
 
-| Prop              | Type                             | Default            | Description                                 |
-| ----------------- | -------------------------------- | ------------------ | ------------------------------------------- |
-| `data`            | `LocationData[]`                 | **Required**       | Array of location data points               |
-| `filterCountry`   | `string`                         | `undefined`        | Filter to show only specific country        |
-| `filterState`     | `string`                         | `undefined`        | Filter to show only specific state/province |
-| `filterCity`      | `string`                         | `undefined`        | Filter to show only specific city           |
-| `aggregationMode` | `'country' \| 'state' \| 'city'` | `'country'`        | How to cluster/aggregate locations          |
-| `mapImage`        | `string`                         | `'/earth-map.jpg'` | Path to custom Earth texture image          |
+| Prop              | Type                             | Default             | Description                                 |
+| ----------------- | -------------------------------- | ------------------- | ------------------------------------------- |
+| `data`            | `LocationData[]`                 | **Required**        | Array of location data points               |
+| `filterCountry`   | `string`                         | `undefined`         | Filter to show only specific country        |
+| `filterState`     | `string`                         | `undefined`         | Filter to show only specific state/province |
+| `filterCity`      | `string`                         | `undefined`         | Filter to show only specific city           |
+| `aggregationMode` | `'country' \| 'state' \| 'city'` | `'country'`         | How to cluster/aggregate locations          |
+| `mapImage`        | `string`                         | `'/earth-map.webp'` | Path to custom Earth texture image          |
 
 ### LocationData Type
 
@@ -135,7 +135,7 @@ globeplot/
 │   ├── templates/
 │   └── package.json
 ├── public/
-│   └── earth-map.jpg         # Earth texture image
+│   └── earth-map.webp        # Earth texture image (WebP format)
 └── package.json
 ```
 

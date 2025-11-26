@@ -33,8 +33,8 @@ program
     );
     const breakdownDest = path.join(componentsDir, "global-breakdown.tsx");
 
-    const imageSource = path.join(__dirname, "../templates/earth-map.jpg");
-    const imageDest = path.join(publicDir, "earth-map.jpg");
+    const imageSource = path.join(__dirname, "../templates/earth-map.webp");
+    const imageDest = path.join(publicDir, "earth-map.webp");
 
     // Check if directories exist
     if (!fs.existsSync(componentsDir)) {
@@ -98,18 +98,18 @@ program
       const response = await prompts({
         type: "confirm",
         name: "overwrite",
-        message: "public/earth-map.jpg already exists. Overwrite?",
+        message: "public/earth-map.webp already exists. Overwrite?",
         initial: false,
       });
       if (!response.overwrite) {
-        console.log(chalk.yellow("Skipping earth-map.jpg..."));
+        console.log(chalk.yellow("Skipping earth-map.webp..."));
       } else {
         await fs.copy(imageSource, imageDest);
-        console.log(chalk.green("✓ Updated public/earth-map.jpg"));
+        console.log(chalk.green("✓ Updated public/earth-map.webp"));
       }
     } else {
       await fs.copy(imageSource, imageDest);
-      console.log(chalk.green("✓ Created public/earth-map.jpg"));
+      console.log(chalk.green("✓ Created public/earth-map.webp"));
     }
 
     console.log(chalk.blue("\nSuccess! Globe components added."));
