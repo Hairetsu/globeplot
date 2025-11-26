@@ -212,7 +212,7 @@ export default function Globe({
     const H = globeSize.height;
 
     const visibleLon = 360 / 2;
-    const visibleLat = 180 / 1.75;
+    const visibleLat = 180; // Show full height
 
     const pxPerDegLon = W / visibleLon;
     const pxPerDegLat = H / visibleLat;
@@ -268,30 +268,38 @@ export default function Globe({
   const animate = useCallback(() => {
     if (!isDragging) {
       rotationRef.current.lon += velocityRef.current.lon;
-      rotationRef.current.lat += velocityRef.current.lat;
+      // rotationRef.current.lat += velocityRef.current.lat; // Removed
 
       velocityRef.current.lon *= 0.95;
-      velocityRef.current.lat *= 0.95;
+      // velocityRef.current.lat *= 0.95; // Removed
 
       if (Math.abs(velocityRef.current.lon) < 0.01) velocityRef.current.lon = 0;
-      if (Math.abs(velocityRef.current.lat) < 0.01) velocityRef.current.lat = 0;
+      // if (Math.abs(velocityRef.current.lat) < 0.01) velocityRef.current.lat = 0; // Removed
     }
 
     rotationRef.current.lon = ((rotationRef.current.lon + 180) % 360 + 360) % 360 - 180;
-    rotationRef.current.lat = Math.max(Math.min(rotationRef.current.lat, 85), -85);
+
+    // Lock latitude at 0 (equator centered, no vertical rotation)
+    rotationRef.current.lat = 0;
+
+    // Constrain latitude to prevent scrolling past image boundaries
+    // The image covers 180 degrees, and we show 180/1.75 ≈ 102.86 degrees
+    // So we can pan ±(180 - 102.86)/2 ≈ ±38.57 degrees from center
+    // const visibleLat = 180 / 1.75; // Removed
+    // const maxLatOffset = (180 - visibleLat) / 2; // Removed
+    // rotationRef.current.lat = Math.max(Math.min(rotationRef.current.lat, maxLatOffset), -maxLatOffset); // Removed
 
     if (globeRef.current && globeSize.width > 0) {
       const W = globeSize.width;
       const H = globeSize.height;
 
       const visibleLon = 360 / 2;
-      const visibleLat = 180 / 1.75;
 
       const pxPerDegLon = W / visibleLon;
-      const pxPerDegLat = H / visibleLat;
+      // const pxPerDegLat = H / visibleLat; // Removed
 
       const bgPosX = -0.5 * W - (rotationRef.current.lon * pxPerDegLon);
-      const bgPosY = -0.375 * H + (rotationRef.current.lat * pxPerDegLat);
+      const bgPosY = 0; // Full height (100%) naturally centers in the circle
 
       globeRef.current.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
 
@@ -316,18 +324,15 @@ export default function Globe({
     if (!isDragging) return;
 
     const deltaX = e.clientX - lastPosRef.current.x;
-    const deltaY = e.clientY - lastPosRef.current.y;
 
     lastPosRef.current = { x: e.clientX, y: e.clientY };
 
     const sensitivity = 0.25;
     const moveLon = -deltaX * sensitivity;
-    const moveLat = deltaY * sensitivity;
 
     rotationRef.current.lon += moveLon;
-    rotationRef.current.lat += moveLat;
 
-    velocityRef.current = { lon: moveLon, lat: moveLat };
+    velocityRef.current = { lon: moveLon, lat: 0 };
   };
 
   const handleMouseUp = () => setIsDragging(false);
@@ -345,6 +350,17 @@ export default function Globe({
       scaleRef.current = Math.min(Math.max(newScale, 0.5), 3); // Min 0.5x, Max 3x
 
       if (globeEl.parentElement) {
+        // Get cursor position relative to the globe element
+        const rect = globeEl.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Calculate the transform origin as a percentage
+        const originX = (x / rect.width) * 100;
+        const originY = (y / rect.height) * 100;
+
+        // Set the transform origin to the cursor position
+        globeEl.parentElement.style.transformOrigin = `${originX}% ${originY}%`;
         globeEl.parentElement.style.transform = `scale(${scaleRef.current})`;
         globeEl.parentElement.style.transition = 'transform 0.1s ease-out';
       }
@@ -369,7 +385,7 @@ export default function Globe({
           onMouseLeave={handleMouseLeave}
           style={{
             backgroundImage: `url('${mapImage}')`,
-            backgroundSize: "200% 175%",
+            backgroundSize: "200% 100%",
             backgroundRepeat: "repeat",
             boxShadow: "inset 30px 0 60px -10px rgba(0,0,0,1), -10px -5px 20px -5px rgba(255,255,255,0.1)"
           }}
