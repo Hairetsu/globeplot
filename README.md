@@ -2,6 +2,8 @@
 
 An interactive 3D globe component for React/Next.js that lets you visualize geographic data with beautiful animations and filtering capabilities.
 
+🌐 **[Live Demo](https://hairetsu.github.io/globeplot/)** - See it in action!
+
 ![GlobePlot Demo](public/earth-map.webp)
 
 ## Features
