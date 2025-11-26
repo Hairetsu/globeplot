@@ -1,0 +1,18 @@
+# Ignore development files
+node_modules/
+*.log
+npm-debug.log*
+
+# Ignore test directories
+test/
+tests/
+*.test.js
+*.spec.js
+
+# Ignore git files
+.git
+.gitignore
+
+# Keep templates and bin
+!templates/
+!bin/

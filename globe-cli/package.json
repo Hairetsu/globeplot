@@ -1,0 +1,39 @@
+{
+  "name": "globeplot",
+  "version": "1.0.0",
+  "description": "CLI to add the Globe component to your Next.js project",
+  "main": "bin/index.js",
+  "bin": {
+    "globeplot": "./bin/index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "globe",
+    "component",
+    "cli",
+    "nextjs",
+    "react",
+    "3d",
+    "visualization",
+    "map",
+    "interactive"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hairetsu/globeplot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hairetsu/globeplot/issues"
+  },
+  "homepage": "https://github.com/hairetsu/globeplot#readme",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "fs-extra": "^11.2.0",
+    "prompts": "^2.4.2"
+  }
+}
