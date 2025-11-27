@@ -1,6 +1,6 @@
 {
   "name": "globeplot",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "CLI to add the Globe component to your Next.js project",
   "main": "bin/index.js",
   "bin": {

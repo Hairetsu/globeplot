@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useRef, useEffect, useState, useCallback, useMemo } from "react";
+import React, {
+  useRef,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 
 export interface LocationData {
   name: string;
@@ -27,7 +33,7 @@ interface GlobeProps {
   filterCountry?: string;
   filterState?: string;
   filterCity?: string;
-  aggregationMode?: 'country' | 'state' | 'city';
+  aggregationMode?: "country" | "state" | "city";
   mapImage?: string;
 }
 
@@ -36,8 +42,8 @@ export default function Globe({
   filterCountry,
   filterState,
   filterCity,
-  aggregationMode = 'city',
-  mapImage = `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/earth-map.webp`
+  aggregationMode = "city",
+  mapImage = "/earth-map.webp",
 }: GlobeProps) {
   const globeRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -58,44 +64,47 @@ export default function Globe({
     let filtered = data;
 
     if (filterCountry) {
-      filtered = filtered.filter(loc => loc.country === filterCountry);
+      filtered = filtered.filter((loc) => loc.country === filterCountry);
     }
     if (filterState) {
-      filtered = filtered.filter(loc => loc.state === filterState);
+      filtered = filtered.filter((loc) => loc.state === filterState);
     }
     if (filterCity) {
-      filtered = filtered.filter(loc => loc.city === filterCity);
+      filtered = filtered.filter((loc) => loc.city === filterCity);
     }
 
     return filtered;
-  }, [filterCountry, filterState, filterCity]);
+  }, [data, filterCountry, filterState, filterCity]);
 
   // Aggregation Logic based on mode
   const clusters = useMemo(() => {
     // Aggregate based on the selected mode
-    const aggregationMap = new Map<string, {
-      name: string;
-      latSum: number;
-      lonSum: number;
-      visitors: number;
-      count: number;
-      locations: LocationData[];
-    }>();
+    const aggregationMap = new Map<
+      string,
+      {
+        name: string;
+        latSum: number;
+        lonSum: number;
+        visitors: number;
+        count: number;
+        locations: LocationData[];
+      }
+    >();
 
-    filteredLocations.forEach(loc => {
+    filteredLocations.forEach((loc) => {
       let key: string;
       let displayName: string;
 
       switch (aggregationMode) {
-        case 'country':
+        case "country":
           key = loc.country;
           displayName = loc.country;
           break;
-        case 'state':
+        case "state":
           key = `${loc.country}-${loc.state}`;
           displayName = `${loc.state}, ${loc.country}`;
           break;
-        case 'city':
+        case "city":
         default:
           key = `${loc.country}-${loc.state}-${loc.city}`;
           displayName = `${loc.city}, ${loc.state}`;
@@ -109,7 +118,7 @@ export default function Globe({
           lonSum: 0,
           visitors: 0,
           count: 0,
-          locations: []
+          locations: [],
         });
       }
 
@@ -130,7 +139,7 @@ export default function Globe({
         visitors: agg.visitors,
         count: agg.count,
         name: agg.count > 1 ? `${agg.name} (${agg.count} cities)` : agg.name,
-        locations: agg.locations
+        locations: agg.locations,
       });
     });
 
@@ -142,8 +151,12 @@ export default function Globe({
     if (filteredLocations.length === 0) return;
 
     // Calculate center of filtered locations
-    const avgLat = filteredLocations.reduce((sum, loc) => sum + loc.lat, 0) / filteredLocations.length;
-    const avgLon = filteredLocations.reduce((sum, loc) => sum + loc.lon, 0) / filteredLocations.length;
+    const avgLat =
+      filteredLocations.reduce((sum, loc) => sum + loc.lat, 0) /
+      filteredLocations.length;
+    const avgLon =
+      filteredLocations.reduce((sum, loc) => sum + loc.lon, 0) /
+      filteredLocations.length;
 
     // Animate to the new position
     const startLon = rotationRef.current.lon;
@@ -174,13 +187,13 @@ export default function Globe({
     };
 
     animateToTarget();
-  }, [data, filterCountry, filterState, filterCity]);
+  }, [filteredLocations]);
 
   useEffect(() => {
     if (globeRef.current) {
       setGlobeSize({
         width: globeRef.current.offsetWidth,
-        height: globeRef.current.offsetHeight
+        height: globeRef.current.offsetHeight,
       });
     }
 
@@ -188,13 +201,13 @@ export default function Globe({
       if (globeRef.current) {
         setGlobeSize({
           width: globeRef.current.offsetWidth,
-          height: globeRef.current.offsetHeight
+          height: globeRef.current.offsetHeight,
         });
       }
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const getMarkerSize = (visitors: number) => {
@@ -238,7 +251,7 @@ export default function Globe({
         const x = W / 2 + diffLon * pxPerDegLon;
         const y = H / 2 + diffLat * pxPerDegLat;
 
-        markerEl.style.display = 'flex';
+        markerEl.style.display = "flex";
         markerEl.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
 
         if (cluster.id === hoveredIdRef.current && tooltipRef.current) {
@@ -247,66 +260,72 @@ export default function Globe({
 
           tooltipRef.current.style.transform = `translate(-50%, -100%) translate(${x}px, ${y - size / 2 - 8}px)`;
 
-          const nameEl = tooltipRef.current.querySelector('.tooltip-name');
-          const countEl = tooltipRef.current.querySelector('.tooltip-count');
+          const nameEl = tooltipRef.current.querySelector(".tooltip-name");
+          const countEl = tooltipRef.current.querySelector(".tooltip-count");
           if (nameEl) nameEl.textContent = cluster.name;
-          if (countEl) countEl.textContent = `${cluster.visitors.toLocaleString()} visitors`;
+          if (countEl)
+            countEl.textContent = `${cluster.visitors.toLocaleString()} visitors`;
         }
-
       } else {
-        markerEl.style.display = 'none';
+        markerEl.style.display = "none";
       }
     });
 
     if (tooltipRef.current) {
-      tooltipRef.current.style.display = tooltipVisible ? 'block' : 'none';
-      tooltipRef.current.style.opacity = tooltipVisible ? '1' : '0';
+      tooltipRef.current.style.display = tooltipVisible ? "block" : "none";
+      tooltipRef.current.style.opacity = tooltipVisible ? "1" : "0";
     }
-
   }, [globeSize, clusters]);
 
-  const animate = useCallback(() => {
-    if (!isDragging) {
-      rotationRef.current.lon += velocityRef.current.lon;
-      // rotationRef.current.lat += velocityRef.current.lat; // Removed vertical rotation
-
-      velocityRef.current.lon *= 0.95;
-      // velocityRef.current.lat *= 0.95; // Removed vertical velocity decay
-
-      if (Math.abs(velocityRef.current.lon) < 0.01) velocityRef.current.lon = 0;
-      // if (Math.abs(velocityRef.current.lat) < 0.01) velocityRef.current.lat = 0; // Removed vertical velocity check
-    }
-
-    rotationRef.current.lon = ((rotationRef.current.lon + 180) % 360 + 360) % 360 - 180;
-
-    // Lock latitude at 0 (equator centered, no vertical rotation)
-    rotationRef.current.lat = 0;
-
-    if (globeRef.current && globeSize.width > 0) {
-      const W = globeSize.width;
-      const H = globeSize.height;
-
-      const visibleLon = 360 / 2;
-      // const visibleLat = 180 / 1.75; // Removed as latitude is locked
-
-      const pxPerDegLon = W / visibleLon;
-      // const pxPerDegLat = H / visibleLat; // Removed as latitude is locked
-
-      const bgPosX = -0.5 * W - (rotationRef.current.lon * pxPerDegLon);
-      const bgPosY = 0; // Full height (100%) naturally centers in the circle
-
-      globeRef.current.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
-
-      updateMarkers();
-    }
-
-    requestRef.current = requestAnimationFrame(animate);
-  }, [isDragging, globeSize, updateMarkers]);
-
   useEffect(() => {
+    const animate = () => {
+      if (!isDragging) {
+        rotationRef.current.lon += velocityRef.current.lon;
+        // rotationRef.current.lat += velocityRef.current.lat; // Removed
+
+        velocityRef.current.lon *= 0.95;
+        // velocityRef.current.lat *= 0.95; // Removed
+
+        if (Math.abs(velocityRef.current.lon) < 0.01)
+          velocityRef.current.lon = 0;
+        // if (Math.abs(velocityRef.current.lat) < 0.01) velocityRef.current.lat = 0; // Removed
+      }
+
+      rotationRef.current.lon =
+        ((((rotationRef.current.lon + 180) % 360) + 360) % 360) - 180;
+
+      // Lock latitude at 0 (equator centered, no vertical rotation)
+      rotationRef.current.lat = 0;
+
+      // Constrain latitude to prevent scrolling past image boundaries
+      // The image covers 180 degrees, and we show 180/1.75 ≈ 102.86 degrees
+      // So we can pan ±(180 - 102.86)/2 ≈ ±38.57 degrees from center
+      // const visibleLat = 180 / 1.75; // Removed
+      // const maxLatOffset = (180 - visibleLat) / 2; // Removed
+      // rotationRef.current.lat = Math.max(Math.min(rotationRef.current.lat, maxLatOffset), -maxLatOffset); // Removed
+
+      if (globeRef.current && globeSize.width > 0) {
+        const W = globeSize.width;
+
+        const visibleLon = 360 / 2;
+
+        const pxPerDegLon = W / visibleLon;
+        // const pxPerDegLat = H / visibleLat; // Removed
+
+        const bgPosX = -0.5 * W - rotationRef.current.lon * pxPerDegLon;
+        const bgPosY = 0; // Full height (100%) naturally centers in the circle
+
+        globeRef.current.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
+
+        updateMarkers();
+      }
+
+      requestRef.current = requestAnimationFrame(animate);
+    };
+
     requestRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestRef.current);
-  }, [animate]);
+  }, [isDragging, globeSize, updateMarkers]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
@@ -356,14 +375,14 @@ export default function Globe({
         // Set the transform origin to the cursor position
         globeEl.parentElement.style.transformOrigin = `${originX}% ${originY}%`;
         globeEl.parentElement.style.transform = `scale(${scaleRef.current})`;
-        globeEl.parentElement.style.transition = 'transform 0.1s ease-out';
+        globeEl.parentElement.style.transition = "transform 0.1s ease-out";
       }
     };
 
-    globeEl.addEventListener('wheel', handleWheel, { passive: false });
+    globeEl.addEventListener("wheel", handleWheel, { passive: false });
 
     return () => {
-      globeEl.removeEventListener('wheel', handleWheel);
+      globeEl.removeEventListener("wheel", handleWheel);
     };
   }, []);
 
@@ -381,7 +400,8 @@ export default function Globe({
             backgroundImage: `url('${mapImage}')`,
             backgroundSize: "200% 100%",
             backgroundRepeat: "repeat",
-            boxShadow: "inset 30px 0 60px -10px rgba(0,0,0,1), -10px -5px 20px -5px rgba(255,255,255,0.1)"
+            boxShadow:
+              "inset 30px 0 60px -10px rgba(0,0,0,1), -10px -5px 20px -5px rgba(255,255,255,0.1)",
           }}
         >
           {clusters.map((cluster) => {
@@ -393,9 +413,10 @@ export default function Globe({
                   if (el) markersRef.current.set(cluster.id, el);
                   else markersRef.current.delete(cluster.id);
                 }}
-                onMouseEnter={() => hoveredIdRef.current = cluster.id}
+                onMouseEnter={() => (hoveredIdRef.current = cluster.id)}
                 onMouseLeave={() => {
-                  if (hoveredIdRef.current === cluster.id) hoveredIdRef.current = null;
+                  if (hoveredIdRef.current === cluster.id)
+                    hoveredIdRef.current = null;
                 }}
                 className="absolute rounded-full bg-cyan-400/60 border border-cyan-300/80 shadow-[0_0_15px_rgba(34,211,238,0.5)] cursor-pointer flex items-center justify-center hover:bg-cyan-300/80 transition-colors duration-200"
                 style={{
@@ -403,7 +424,7 @@ export default function Globe({
                   height: `${size}px`,
                   top: 0,
                   left: 0,
-                  display: 'none',
+                  display: "none",
                 }}
               >
                 <div className="w-1 h-1 bg-white rounded-full pointer-events-none" />
@@ -415,7 +436,7 @@ export default function Globe({
         <div
           ref={tooltipRef}
           className="absolute top-0 left-0 pointer-events-none z-20 transition-opacity duration-150"
-          style={{ display: 'none', opacity: 0 }}
+          style={{ display: "none", opacity: 0 }}
         >
           <div className="bg-black/80 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap backdrop-blur-sm border border-white/10 shadow-xl transform -translate-x-1/2">
             <span className="font-bold tooltip-name"></span>
@@ -426,8 +447,10 @@ export default function Globe({
         <div
           className="absolute inset-0 rounded-full pointer-events-none"
           style={{
-            background: "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.4) 100%)",
-            boxShadow: "inset -20px -20px 50px rgba(0,0,0,0.5), inset 10px 10px 30px rgba(255,255,255,0.1)"
+            background:
+              "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.4) 100%)",
+            boxShadow:
+              "inset -20px -20px 50px rgba(0,0,0,0.5), inset 10px 10px 30px rgba(255,255,255,0.1)",
           }}
         />
 

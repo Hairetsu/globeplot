@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Globe from "@/components/globe";
-import { LocationData } from "@/components/globe";
+import Globe, { LocationData } from "@/components/globe";
 export default function GlobalVisualWidget({
   locationsData,
 }: {
@@ -31,7 +30,7 @@ export default function GlobalVisualWidget({
   const countries = useMemo(() => {
     const unique = [...new Set(locationsData.map((loc) => loc.country))];
     return unique.sort();
-  }, []);
+  }, [locationsData]);
 
   const states = useMemo(() => {
     let filtered = locationsData;
@@ -40,7 +39,7 @@ export default function GlobalVisualWidget({
     }
     const unique = [...new Set(filtered.map((loc) => loc.state))];
     return unique.sort();
-  }, [filterCountry]);
+  }, [locationsData, filterCountry]);
 
   const cities = useMemo(() => {
     let filtered = locationsData;
@@ -52,7 +51,7 @@ export default function GlobalVisualWidget({
     }
     const unique = [...new Set(filtered.map((loc) => loc.city))];
     return unique.sort();
-  }, [filterCountry, filterState]);
+  }, [locationsData, filterCountry, filterState]);
 
   const handleCountryChange = (country: string) => {
     setFilterCountry(country);
