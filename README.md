@@ -14,6 +14,7 @@ An interactive 3D globe component for React/Next.js that lets you visualize geog
 - 🔍 **Dynamic Filtering** - Filter locations by country, state, and city with cascading controls
 - 📱 **Fully Responsive** - Optimized for desktop, tablet, and mobile devices
 - 🎨 **Customizable** - Easy to style and extend with your own data
+- 🎭 **Visual Variants** - Switch between 6 stunning styles (Hologram, Night, Vintage, etc.)
 - ⚡ **Performance Optimized** - GPU-accelerated CSS transforms for smooth interactions
 - 🎪 **Fishbowl Effect** - Spherical lens distortion for realistic globe appearance
 
@@ -100,14 +101,15 @@ export default function Dashboard() {
 
 ### Globe Props
 
-| Prop              | Type                             | Default             | Description                                 |
-| ----------------- | -------------------------------- | ------------------- | ------------------------------------------- |
-| `data`            | `LocationData[]`                 | **Required**        | Array of location data points               |
-| `filterCountry`   | `string`                         | `undefined`         | Filter to show only specific country        |
-| `filterState`     | `string`                         | `undefined`         | Filter to show only specific state/province |
-| `filterCity`      | `string`                         | `undefined`         | Filter to show only specific city           |
-| `aggregationMode` | `'country' \| 'state' \| 'city'` | `'country'`         | How to cluster/aggregate locations          |
-| `mapImage`        | `string`                         | `'/earth-map.webp'` | Path to custom Earth texture image          |
+| Prop              | Type                             | Default      | Description                                            |
+| ----------------- | -------------------------------- | ------------ | ------------------------------------------------------ |
+| `data`            | `LocationData[]`                 | **Required** | Array of location data points                          |
+| `filterCountry`   | `string`                         | `undefined`  | Filter to show only specific country                   |
+| `filterState`     | `string`                         | `undefined`  | Filter to show only specific state/province            |
+| `filterCity`      | `string`                         | `undefined`  | Filter to show only specific city                      |
+| `aggregationMode` | `'country' \| 'state' \| 'city'` | `'country'`  | How to cluster/aggregate locations                     |
+| `variant`         | `string`                         | `'default'`  | Visual style preset (see below)                        |
+| `mapImage`        | `string`                         | `undefined`  | Path to custom Earth texture image (overrides variant) |
 
 ### LocationData Type
 
@@ -122,6 +124,19 @@ interface LocationData {
   visitors: number; // Metric value (size of marker)
 }
 ```
+
+### Visual Variants
+
+The `Globe` component comes with 6 built-in visual styles. Pass the `variant` prop to switch between them:
+
+| Variant     | Description                                    |
+| :---------- | :--------------------------------------------- |
+| `default`   | Standard earth map with cyan markers           |
+| `minimal`   | Light/Dark minimal map with monochrome markers |
+| `hologram`  | Blue digital map with glowing blue markers     |
+| `vintage`   | Sepia-toned map with amber markers             |
+| `night`     | Dark earth map with sky blue markers           |
+| `dark-gold` | Dark map with gold markers                     |
 
 ## Project Structure
 

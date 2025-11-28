@@ -94,22 +94,38 @@ program
       console.log(chalk.green("✓ Created components/global-breakdown.tsx"));
     }
 
-    if (fs.existsSync(imageDest)) {
-      const response = await prompts({
-        type: "confirm",
-        name: "overwrite",
-        message: "public/earth-map.webp already exists. Overwrite?",
-        initial: false,
-      });
-      if (!response.overwrite) {
-        console.log(chalk.yellow("Skipping earth-map.webp..."));
+    // Copy all map images
+    const mapImages = [
+      "earth-map.webp",
+      "earth-blue-hologram.webp",
+      "earth-dark-gold.webp",
+      "earth-minimal-light.webp",
+      "earth-night.webp",
+      "earth-vintage.webp",
+    ];
+
+    for (const image of mapImages) {
+      const source = path.join(__dirname, `../templates/${image}`);
+      const dest = path.join(publicDir, image);
+
+      if (fs.existsSync(dest)) {
+        // Skip asking for every single image to avoid annoyance, just check the main one or overwrite all if confirmed?
+        // For simplicity, let's just check if it exists and skip if so, or maybe just overwrite silently if the user approved the main component?
+        // Let's stick to the pattern: check if it exists, if so, skip unless we want to prompt.
+        // Prompting for 6 images is annoying. Let's just log if we skip.
+        // Or better: check if ANY exist, ask once "Overwrite existing map images?", then do it.
+        // For now, to keep it simple and consistent with previous behavior (which asked for earth-map.webp), I'll just copy them if they don't exist, or skip if they do.
+        // Actually, let's just try to copy and if it exists, maybe just skip logging to avoid spam, or log "Skipping X".
+        // I'll stick to the existing pattern but simplified loop.
+
+        // Actually, let's just check the main one (earth-map.webp) as a proxy for "images installed",
+        // or just loop and check each.
+        // Let's loop and check each.
+        console.log(chalk.yellow(`Skipping ${image} (already exists)...`));
       } else {
-        await fs.copy(imageSource, imageDest);
-        console.log(chalk.green("✓ Updated public/earth-map.webp"));
+        await fs.copy(source, dest);
+        console.log(chalk.green(`✓ Created public/${image}`));
       }
-    } else {
-      await fs.copy(imageSource, imageDest);
-      console.log(chalk.green("✓ Created public/earth-map.webp"));
     }
 
     console.log(chalk.blue("\nSuccess! Globe components added."));

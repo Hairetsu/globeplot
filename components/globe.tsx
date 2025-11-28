@@ -7,6 +7,13 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+import { cva, type VariantProps } from "class-variance-authority";
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 export interface LocationData {
   name: string;
@@ -28,13 +35,74 @@ interface ClusterData {
   locations: LocationData[];
 }
 
-interface GlobeProps {
+const markerVariants = cva(
+  "absolute rounded-full border cursor-pointer flex items-center justify-center transition-colors duration-200",
+  {
+    variants: {
+      variant: {
+        default:
+          "bg-cyan-400/60 border-cyan-300/80 shadow-[0_0_15px_rgba(34,211,238,0.5)] hover:bg-cyan-300/80",
+        minimal:
+          "bg-foreground/60 border-foreground/80 shadow-[0_0_15px_rgba(0,0,0,0.2)] hover:bg-foreground/80",
+        hologram:
+          "bg-blue-500/60 border-blue-400/80 shadow-[0_0_15px_rgba(59,130,246,0.5)] hover:bg-blue-400/80",
+        vintage:
+          "bg-amber-700/60 border-amber-600/80 shadow-[0_0_15px_rgba(180,83,9,0.5)] hover:bg-amber-600/80",
+        night:
+          "bg-sky-500/60 border-sky-400/80 shadow-[0_0_15px_rgba(14,165,233,0.5)] hover:bg-sky-400/80",
+        "dark-gold":
+          "bg-yellow-500/60 border-yellow-400/80 shadow-[0_0_15px_rgba(234,179,8,0.5)] hover:bg-yellow-400/80",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+);
+
+const VARIANTS_CONFIG = {
+  default: {
+    map: "/earth-map.webp",
+    tooltip: "bg-black/80 text-white border-white/10",
+    tooltipCount: "text-cyan-300",
+  },
+  minimal: {
+    map: "/earth-minimal-light.webp",
+    tooltip: "bg-background/80 text-foreground border-border",
+    tooltipCount: "text-muted-foreground",
+  },
+  hologram: {
+    map: "/earth-blue-hologram.webp",
+    tooltip: "bg-blue-950/80 text-blue-100 border-blue-500/30",
+    tooltipCount: "text-blue-400",
+  },
+  vintage: {
+    map: "/earth-vintage.webp",
+    tooltip: "bg-amber-950/80 text-amber-100 border-amber-500/30",
+    tooltipCount: "text-amber-400",
+  },
+  night: {
+    map: "/earth-night.webp",
+    tooltip: "bg-black/90 text-white border-white/20",
+    tooltipCount: "text-sky-400",
+  },
+  "dark-gold": {
+    map: "/earth-dark-gold.webp",
+    tooltip: "bg-yellow-950/90 text-yellow-100 border-yellow-500/30",
+    tooltipCount: "text-yellow-400",
+  },
+} as const;
+
+export interface GlobeProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+  VariantProps<typeof markerVariants> {
   data: LocationData[];
   filterCountry?: string;
   filterState?: string;
   filterCity?: string;
   aggregationMode?: "country" | "state" | "city";
   mapImage?: string;
+  variant?: keyof typeof VARIANTS_CONFIG;
 }
 
 export default function Globe({
@@ -43,8 +111,14 @@ export default function Globe({
   filterState,
   filterCity,
   aggregationMode = "city",
-  mapImage = "/earth-map.webp",
+  mapImage,
+  variant = "default",
+  className,
+  ...props
 }: GlobeProps) {
+  const config = VARIANTS_CONFIG[variant || "default"];
+  const currentMapImage = mapImage || config.map;
+
   const globeRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<Map<string, HTMLDivElement>>(new Map());
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -379,15 +453,103 @@ export default function Globe({
       }
     };
 
+    // Touch handling state
+    let touchStartDist = 0;
+    let touchStartScale = 1;
+    let lastTouchX = 0;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        // Single touch - Drag/Spin
+        setIsDragging(true);
+        lastTouchX = e.touches[0].clientX;
+        velocityRef.current = { lon: 0, lat: 0 };
+      } else if (e.touches.length === 2) {
+        // Two touches - Pinch Zoom
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        const dist = Math.hypot(
+          touch1.clientX - touch2.clientX,
+          touch1.clientY - touch2.clientY
+        );
+        touchStartDist = dist;
+        touchStartScale = scaleRef.current;
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      // Prevent default scrolling behavior when interacting with the globe
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+
+      if (e.touches.length === 1 && isDragging) {
+        // Single touch move - Spin
+        const touchX = e.touches[0].clientX;
+        const deltaX = touchX - lastTouchX;
+        lastTouchX = touchX;
+
+        const sensitivity = 0.25;
+        const moveLon = -deltaX * sensitivity;
+
+        rotationRef.current.lon += moveLon;
+        velocityRef.current = { lon: moveLon, lat: 0 };
+      } else if (e.touches.length === 2) {
+        // Two touches move - Zoom
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        const dist = Math.hypot(
+          touch1.clientX - touch2.clientX,
+          touch1.clientY - touch2.clientY
+        );
+
+        if (touchStartDist > 0) {
+          const scaleChange = dist / touchStartDist;
+          const newScale = touchStartScale * scaleChange;
+          scaleRef.current = Math.min(Math.max(newScale, 0.5), 3);
+
+          if (globeEl.parentElement) {
+            // Calculate center of pinch for transform origin
+            const centerX = (touch1.clientX + touch2.clientX) / 2;
+            const centerY = (touch1.clientY + touch2.clientY) / 2;
+            const rect = globeEl.getBoundingClientRect();
+
+            const x = centerX - rect.left;
+            const y = centerY - rect.top;
+
+            const originX = (x / rect.width) * 100;
+            const originY = (y / rect.height) * 100;
+
+            globeEl.parentElement.style.transformOrigin = `${originX}% ${originY}%`;
+            globeEl.parentElement.style.transform = `scale(${scaleRef.current})`;
+            globeEl.parentElement.style.transition = "transform 0.1s ease-out";
+          }
+        }
+      }
+    };
+
+    const handleTouchEnd = () => {
+      setIsDragging(false);
+      touchStartDist = 0;
+    };
+
     globeEl.addEventListener("wheel", handleWheel, { passive: false });
+    globeEl.addEventListener("touchstart", handleTouchStart, { passive: false });
+    globeEl.addEventListener("touchmove", handleTouchMove, { passive: false });
+    globeEl.addEventListener("touchend", handleTouchEnd);
+    globeEl.addEventListener("touchcancel", handleTouchEnd);
 
     return () => {
       globeEl.removeEventListener("wheel", handleWheel);
+      globeEl.removeEventListener("touchstart", handleTouchStart);
+      globeEl.removeEventListener("touchmove", handleTouchMove);
+      globeEl.removeEventListener("touchend", handleTouchEnd);
+      globeEl.removeEventListener("touchcancel", handleTouchEnd);
     };
-  }, []);
+  }, [isDragging]);
 
   return (
-    <div className="relative w-full flex items-center justify-center">
+    <div className={cn("relative w-full flex items-center justify-center", className)} {...props}>
       <div className="relative w-[300px] h-[300px] md:w-[500px] md:h-[500px]">
         <div
           ref={globeRef}
@@ -397,7 +559,7 @@ export default function Globe({
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseLeave}
           style={{
-            backgroundImage: `url('${mapImage}')`,
+            backgroundImage: `url('${currentMapImage}')`,
             backgroundSize: "200% 100%",
             backgroundRepeat: "repeat",
             boxShadow:
@@ -418,7 +580,7 @@ export default function Globe({
                   if (hoveredIdRef.current === cluster.id)
                     hoveredIdRef.current = null;
                 }}
-                className="absolute rounded-full bg-cyan-400/60 border border-cyan-300/80 shadow-[0_0_15px_rgba(34,211,238,0.5)] cursor-pointer flex items-center justify-center hover:bg-cyan-300/80 transition-colors duration-200"
+                className={markerVariants({ variant })}
                 style={{
                   width: `${size}px`,
                   height: `${size}px`,
@@ -438,9 +600,9 @@ export default function Globe({
           className="absolute top-0 left-0 pointer-events-none z-20 transition-opacity duration-150"
           style={{ display: "none", opacity: 0 }}
         >
-          <div className="bg-black/80 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap backdrop-blur-sm border border-white/10 shadow-xl transform -translate-x-1/2">
+          <div className={`text-[10px] px-2 py-1 rounded whitespace-nowrap backdrop-blur-sm border shadow-xl transform -translate-x-1/2 ${config.tooltip}`}>
             <span className="font-bold tooltip-name"></span>
-            <span className="block text-cyan-300 tooltip-count"></span>
+            <span className={`block tooltip-count ${config.tooltipCount}`}></span>
           </div>
         </div>
 

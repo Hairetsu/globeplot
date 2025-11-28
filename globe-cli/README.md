@@ -7,6 +7,7 @@ A CLI tool to easily add an interactive 3D globe component to your Next.js proje
 - 🌍 **Interactive 3D Globe** - Rotate, zoom, and explore the globe with smooth animations
 - 📍 **Location Markers** - Plot locations with latitude/longitude coordinates
 - 🎨 **Customizable** - Filter by country/state/city and adjust aggregation modes
+- 🎭 **Visual Variants** - Switch between 6 stunning styles (Hologram, Night, Vintage, etc.)
 - 📱 **Responsive** - Works seamlessly on desktop and mobile
 - 🚀 **Easy Installation** - One command to add to your project
 
@@ -31,7 +32,7 @@ The CLI will:
 1. Create a `components` directory if it doesn't exist
 2. Copy `globe.tsx` component to `components/globe.tsx`
 3. Copy `global-breakdown.tsx` component to `components/global-breakdown.tsx`
-4. Copy the earth map image to `public/earth-map.webp`
+4. Copy all map texture images (Default, Night, Hologram, etc.) to `public/`
 
 ## Components
 
@@ -61,7 +62,7 @@ const data = [
 ];
 
 export default function Page() {
-  return <Globe data={data} />;
+  return <Globe data={data} variant="hologram" />;
 }
 ```
 
@@ -86,4 +87,16 @@ export default function Dashboard() {
 - `filterState?: string` - Filter locations by state
 - `filterCity?: string` - Filter locations by city
 - `aggregationMode?: 'country' | 'state' | 'city'` - How to aggregate/cluster locations
-- `mapImage?: string` - Path to custom map image (defaults to '/earth-map.webp')
+- `variant?: 'default' | 'minimal' | 'hologram' | 'vintage' | 'night' | 'dark-gold'` - Visual style preset
+- `mapImage?: string` - Path to custom map image (overrides variant)
+
+## Available Variants
+
+| Variant     | Description                                    |
+| :---------- | :--------------------------------------------- |
+| `default`   | Standard earth map with cyan markers           |
+| `minimal`   | Light/Dark minimal map with monochrome markers |
+| `hologram`  | Blue digital map with glowing blue markers     |
+| `vintage`   | Sepia-toned map with amber markers             |
+| `night`     | Dark earth map with sky blue markers           |
+| `dark-gold` | Dark map with gold markers                     |

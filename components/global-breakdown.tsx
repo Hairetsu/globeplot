@@ -1,7 +1,18 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Globe, { LocationData } from "@/components/globe";
+import Globe, { LocationData, GlobeProps } from "@/components/globe";
+
+// Define variants to match the Globe component's config
+const VARIANTS = [
+  { name: "Default", value: "default" },
+  { name: "Blue Hologram", value: "hologram" },
+  { name: "Dark Gold", value: "dark-gold" },
+  { name: "Minimal Light", value: "minimal" },
+  { name: "Night", value: "night" },
+  { name: "Vintage", value: "vintage" },
+] as const;
+
 export default function GlobalVisualWidget({
   locationsData,
 }: {
@@ -14,17 +25,8 @@ export default function GlobalVisualWidget({
   const [filterCountry, setFilterCountry] = useState<string>("");
   const [filterState, setFilterState] = useState<string>("");
   const [filterCity, setFilterCity] = useState<string>("");
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
-  const [mapStyle, setMapStyle] = useState<string>(`${basePath}/earth-map.webp`);
 
-  const mapStyles = [
-    { name: "Default", url: `${basePath}/earth-map.webp` },
-    { name: "Blue Hologram", url: `${basePath}/earth-blue-hologram.webp` },
-    { name: "Dark Gold", url: `${basePath}/earth-dark-gold.webp` },
-    { name: "Minimal Light", url: `${basePath}/earth-minimal-light.webp` },
-    { name: "Night", url: `${basePath}/earth-night.webp` },
-    { name: "Vintage", url: `${basePath}/earth-vintage.webp` },
-  ];
+  const [selectedVariant, setSelectedVariant] = useState<GlobeProps["variant"]>("default");
 
   // Extract unique values for filters
   const countries = useMemo(() => {
@@ -135,19 +137,19 @@ export default function GlobalVisualWidget({
           </div>
         </div>
 
-        {/* Map Style Selector */}
+        {/* Variant Selector */}
         <div className="flex flex-col gap-2 bg-background/80 backdrop-blur-sm p-3 rounded-lg border shadow-sm">
           <h3 className="text-xs font-semibold text-muted-foreground">
-            Map Style
+            Globe Style
           </h3>
           <select
-            value={mapStyle}
-            onChange={(e) => setMapStyle(e.target.value)}
+            value={selectedVariant || "default"}
+            onChange={(e) => setSelectedVariant(e.target.value as GlobeProps["variant"])}
             className="bg-background border rounded px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-primary w-full"
           >
-            {mapStyles.map((style) => (
-              <option key={style.url} value={style.url}>
-                {style.name}
+            {VARIANTS.map((variant) => (
+              <option key={variant.value} value={variant.value}>
+                {variant.name}
               </option>
             ))}
           </select>
@@ -235,7 +237,7 @@ export default function GlobalVisualWidget({
         filterCountry={filterCountry}
         filterState={filterState}
         filterCity={filterCity}
-        mapImage={mapStyle}
+        variant={selectedVariant}
       />
     </div>
   );
