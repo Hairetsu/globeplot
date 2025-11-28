@@ -60,34 +60,36 @@ const markerVariants = cva(
   }
 );
 
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 const VARIANTS_CONFIG = {
   default: {
-    map: "/earth-map.webp",
+    map: `${BASE_PATH}/earth-map.webp`,
     tooltip: "bg-black/80 text-white border-white/10",
     tooltipCount: "text-cyan-300",
   },
   minimal: {
-    map: "/earth-minimal-light.webp",
+    map: `${BASE_PATH}/earth-minimal-light.webp`,
     tooltip: "bg-background/80 text-foreground border-border",
     tooltipCount: "text-muted-foreground",
   },
   hologram: {
-    map: "/earth-blue-hologram.webp",
+    map: `${BASE_PATH}/earth-blue-hologram.webp`,
     tooltip: "bg-blue-950/80 text-blue-100 border-blue-500/30",
     tooltipCount: "text-blue-400",
   },
   vintage: {
-    map: "/earth-vintage.webp",
+    map: `${BASE_PATH}/earth-vintage.webp`,
     tooltip: "bg-amber-950/80 text-amber-100 border-amber-500/30",
     tooltipCount: "text-amber-400",
   },
   night: {
-    map: "/earth-night.webp",
+    map: `${BASE_PATH}/earth-night.webp`,
     tooltip: "bg-black/90 text-white border-white/20",
     tooltipCount: "text-sky-400",
   },
   "dark-gold": {
-    map: "/earth-dark-gold.webp",
+    map: `${BASE_PATH}/earth-dark-gold.webp`,
     tooltip: "bg-yellow-950/90 text-yellow-100 border-yellow-500/30",
     tooltipCount: "text-yellow-400",
   },
